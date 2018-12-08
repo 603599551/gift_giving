@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.how2java.springboot.dao.OrderDAO">
+    <resultMap id="order" type="Map" >
+        <result property="id" column="id" />
+        <result property="num" column="num"  />
+        <result property="item" column="item"  />
+        <result property="quantity" column="quantity"  />
+        <result property="total_price" column="total_price"  />
+        <result property="sender_id" column="sender_id"  />
+        <result property="receiver_id" column="receiver_id"  />
+        <result property="state" column="state"  />
+        <result property="delivery_time" column="delivery_time"  />
+        <result property="delivery_id" column="delivery_id"  />
+        <result property="address" column="address"  />
+        <result property="create_time" column="create_time"  />
+        <result property="modify_time" column="modify_time"  />
+        <result property="creator_id" column="creator_id"  />
+        <result property="modifier_id" column="modifier_id"  />
+        <result property="remark" column="remark"  />
+    </resultMap>
+    <select id="list" resultMap="order">
+        SELECT * FROM g_order
+    </select>
+
+    <insert id="add" parameterType="Map" >
+        insert into g_order ( id,num ) values (#{id},#{num})
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM g_order WHERE id=#{id}
+    </delete>
+
+    <update id="updateById" parameterType="Map" >
+        update g_order set num=#{num} where id=#{id}
+    </update>
+
+    <select id="findOneById" resultMap="order" parameterType="java.lang.String">
+        SELECT * FROM g_order WHERE id=#{id}
+    </select>
+</mapper>
