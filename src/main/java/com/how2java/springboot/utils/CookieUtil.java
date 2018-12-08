@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * cookie工具类
+ * Cookie工具类
  * @author CaryZ
  * @date 2018-12-08
  **/

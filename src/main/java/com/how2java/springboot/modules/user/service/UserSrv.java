@@ -14,6 +14,11 @@ import java.util.Map;
 
 import static com.how2java.springboot.exception.PcExceptionCode.SELECT_EXCEPTION;
 
+/**
+ * 用户管理：用户信息的增删改查+登录
+ * @author CaryZ
+ * @date 2018-12-08
+ */
 @Service
 @Transactional
 public class UserSrv{
@@ -25,8 +30,6 @@ public class UserSrv{
      * 用户登录
      * 1.验证账号密码是否正确
      * 2.将用户登录信息存到userBean,userBean---data
-     * @param parameterMap
-     * @return resultMap
      * 登录正确：
      * {
      *     "code":1,
@@ -39,6 +42,10 @@ public class UserSrv{
      * {
      *     "code":0,
      * }
+     * @author CaryZ
+     * @date 2018-12-08
+     * @param parameterMap
+     * @return resultMap
      */
     public Map<String,Object> loginIn(Map<String,String> parameterMap) throws PcException {
         Map<String,Object> resultMap=new HashMap<>();
@@ -56,7 +63,7 @@ public class UserSrv{
             throw new PcException(SELECT_EXCEPTION,e.getMessage());
         }
         UserBean userBean=new UserBean(user);
-        resultMap.put("data",userBean.getUser());
+        resultMap.put("data",userBean);
         return resultMap;
     }
 }
