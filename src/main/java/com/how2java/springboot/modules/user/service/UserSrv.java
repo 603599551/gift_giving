@@ -10,12 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.event.ObjectChangeListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static com.how2java.springboot.exception.PcExceptionCode.SELECT_EXCEPTION;
+import static com.how2java.springboot.exception.PcExceptionCode.*;
+import static com.how2java.springboot.utils.BeanUtil.objectToString;
 
 /**
- * 用户管理：用户信息的增删改查+登录
+ * @description 用户管理
+ * 用户信息的增删改查+登录
  * @author CaryZ
  * @date 2018-12-08
  */
@@ -27,7 +30,7 @@ public class UserSrv{
     UserDAOImplement userDAOImplement;
 
     /**
-     * 用户登录
+     * @description 用户登录
      * 1.验证账号密码是否正确
      * 2.将用户登录信息存到userBean,userBean---data
      * 登录正确：
@@ -51,7 +54,7 @@ public class UserSrv{
         Map<String,Object> resultMap=new HashMap<>();
         Map<String,Object> user=new HashMap<>();
         try{
-            user=userDAOImplement.findOneByUserNamePwd(parameterMap);
+            user=userDAOImplement.findOneByColumns(parameterMap);
             //账号密码错误
             if (user==null){
                 resultMap.put("code",0);
@@ -66,4 +69,110 @@ public class UserSrv{
         resultMap.put("data",userBean);
         return resultMap;
     }
+
+    /**
+     * @description 用户注册
+     * 1.验证用户名是否重复?
+     * 2.不重复则添加
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * {
+     *     "username":"用户名--",
+     *     "password":"密码--",
+     *     "nickname":"昵称--",
+     *     "phone":"电话",
+     *     "realname":"真实姓名",
+     *     "birthday":"生日",
+     *     "head":"头像",
+     *     "picture":"美照",
+     *     "address":"地址",
+     *     "personalized_signature":"个性签名",
+     * }
+     * @return 添加成功--true 失败--false
+     */
+    public boolean add(Map<String,Object> parameterMap) throws PcException{
+        Map<String,String> paraMap=new HashMap<>(1);
+        paraMap.put("username",objectToString(parameterMap.get("username")));
+        //用户名重复则添加失败
+        try{
+            Map<String,Object> user=userDAOImplement.findOneByColumns(paraMap);
+            if (user!=null){
+                return false;
+            }
+        }catch (Exception e){
+            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+        }
+        //添加用户
+        try{
+            return userDAOImplement.add(parameterMap)==0? false:true;
+        }catch (Exception e){
+            throw new PcException(ADD_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 删除用户
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param id 用户id
+     * @return 删除成功--true 失败--false
+     * @throws PcException
+     */
+    public boolean deleteById(String id) throws PcException{
+        try{
+            return userDAOImplement.deleteById(id)==0? false:true;
+        }catch (Exception e){
+            throw new PcException(DELETE_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 修改用户信息
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return 修改成功--true 失败--false
+     * @throws PcException
+     */
+    public boolean updateById(Map<String,Object> parameterMap) throws PcException{
+        try{
+            return userDAOImplement.updateById(parameterMap)==0? false:true;
+        }catch (Exception e){
+            throw new PcException(UPDATE_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 查询用户列表
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return list
+     * @throws PcException
+     */
+    public List<Map<String, Object>> list(Map<String,String> parameterMap) throws PcException{
+        try{
+            return userDAOImplement.list(parameterMap);
+        }catch (Exception e){
+            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 根据columns查询单个用户
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return list
+     * @throws PcException
+     */
+//    public Map<String, Object> findOneByColumns(Map<String,String> parameterMap) throws PcException{
+//        try{
+//            return userDAOImplement.findOneByColumns(parameterMap);
+//        }catch (Exception e){
+//            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+//        }
+//    }
+
 }

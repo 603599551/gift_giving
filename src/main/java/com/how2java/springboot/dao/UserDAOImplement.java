@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.how2java.springboot.utils.DateUtil.getDateTime;
+import static com.how2java.springboot.utils.UUIDTool.getUUID;
+
 /**
  * 对系统中用户进行添加、信息修改（包括密码修改）和删除的维护
  * @author CaryZ
@@ -18,13 +21,21 @@ public class UserDAOImplement implements UserDAO {
     UserDAO userDAO;
 
     /**
-     * 添加用户
+     * @description 添加用户
+     * 1.账户余额、花芽数量、花冠数量为0
+     * 2.创建、修改时间为当前时间
      * @param map
+     * @return 用户id
      */
     @Override
-    public void add(Map<String, String> map) {
-        map.put("id", UUID.randomUUID().toString());
-        userDAO.add(map);
+    public int add(Map<String, Object> map) {
+        map.put("id", getUUID());
+        map.put("balance",0);
+        map.put("bud_quantity",0);
+        map.put("bud_quantity",0);
+        map.put("create_time",getDateTime());
+        map.put("modify_time",getDateTime());
+        return userDAO.add(map);
     }
 
     /**
@@ -32,8 +43,8 @@ public class UserDAOImplement implements UserDAO {
      * @param id
      */
     @Override
-    public void deleteById(String id) {
-        userDAO.deleteById(id);
+    public int deleteById(String id) {
+        return userDAO.deleteById(id);
     }
 
     /**
@@ -41,18 +52,18 @@ public class UserDAOImplement implements UserDAO {
      * @param map
      */
     @Override
-    public void updateById(Map<String, Object> map) {
-        userDAO.updateById(map);
+    public int updateById(Map<String, Object> map) {
+        return userDAO.updateById(map);
     }
 
     /**
-     * 查找单个用户
-     * @param id
+     * 根据columns查找单个用户
+     * @param map
      * @return
      */
     @Override
-    public Map<String, Object> findOneById(String id) {
-        return userDAO.findOneById(id);
+    public Map<String, Object> findOneByColumns(Map<String,String> map) {
+        return userDAO.findOneByColumns(map);
     }
 
     /**
@@ -60,18 +71,9 @@ public class UserDAOImplement implements UserDAO {
      * @return
      */
     @Override
-    public List<Map<String, Object>> list() {
-        return userDAO.list();
+    public List<Map<String, Object>> list(Map<String,String> map) {
+        return userDAO.list(map);
     }
 
-    /**
-     * 根据账号、密码查询用户
-     * @param map
-     * @return
-     */
-    @Override
-    public Map<String, Object> findOneByUserNamePwd(Map<String, String> map) {
-        return userDAO.findOneByUserNamePwd(map);
-    }
 
 }

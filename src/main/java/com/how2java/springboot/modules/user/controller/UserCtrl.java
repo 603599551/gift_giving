@@ -1,11 +1,10 @@
 package com.how2java.springboot.modules.user.controller;
 
 import com.how2java.springboot.bean.UserBean;
+import com.how2java.springboot.common.controller.BaseCtrl;
 import com.how2java.springboot.exception.PcException;
 import com.how2java.springboot.modules.user.service.UserSrv;
 import com.how2java.springboot.utils.JsonHashMap;
-import com.how2java.springboot.utils.UserSessionUtil;
-import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,44 +32,23 @@ import static com.how2java.springboot.utils.UserSessionUtil.SESSION_USER;
  */
 @RestController
 @RequestMapping("/user")
-public class UserCtrl {
-//
-//    @Autowired
-//    UserDAOImplement userImplement;
-//
-//    @RequestMapping("/list")
-//    public List<Map<String,Object>> list(){
-//        return userImplement.list();
-//    }
-//
-//    @RequestMapping("/add")
-//    public void add(@RequestParam Map<String, String> map) {
-//        userImplement.add(map);
-//    }
-//
-//    @RequestMapping("/deleteById")
-//    public void deleteById(String id) {
-//        userImplement.deleteById(id);
-//    }
-//
-//    @RequestMapping("/updateById")
-//    public void updateById(Map<String, Object> map) {
-//        userImplement.updateById(map);
-//    }
-//
-//    @RequestMapping("/findOneById")
-//    public Map<String, Object> findOneById(String id) {
-//        return userImplement.findOneById(id);
-//    }
+public class UserCtrl{
 
     @Autowired
     UserSrv userSrv;
 
     /**
-     * 用户登录
+     * @description 用户登录
      * 1.验证账号密码是否正确
      * 2.resultMap的data存到session中
      * 3.设置cookie，包括user_id,JSESSIONID,isAdmin
+     * @date 2018-12-08
+     * @param parameterMap
+     * {
+     *     "username":"用户名",
+     *     "password":"密码"
+     * }
+     * @return JsonHashMap
      * 登录正确：
      * {
      *     "code":1,
@@ -85,12 +63,9 @@ public class UserCtrl {
      *     "code":0,
      *     "message":"--失败"
      * }
-     * @date 2018-12-08
-     * @param parameterMap
-     * @return
      */
     @RequestMapping("/login")
-    public JsonHashMap login(@RequestParam Map<String,String> parameterMap,HttpServletRequest request,HttpSession session){
+    public JsonHashMap login(@RequestParam Map<String,String> parameterMap,HttpSession session){
         JsonHashMap jhm=new JsonHashMap();
         try{
             Map<String,Object> resultMap=userSrv.loginIn(parameterMap);
@@ -103,7 +78,9 @@ public class UserCtrl {
                 setCookie("user_id",userBean.getId());
                 setCookie("isAdmin",userBean.getRoleId());
                 setCookie("JSESSIONID",session.getId());
-                jhm.putSuccess(userBean.getUser());
+                Map<String,Map<String,Object>> userMap=new HashMap<>(1);
+                userMap.put("user",userBean.getUser());
+                jhm.putSuccess(userMap);
             }
         }catch (PcException e){
             e.printStackTrace();
@@ -112,4 +89,97 @@ public class UserCtrl {
         return jhm;
     }
 
+    /**
+     * @description 用户注册
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return jsonHashMap
+     */
+    @RequestMapping("/add")
+    public JsonHashMap add(@RequestParam Map<String, Object> parameterMap) {
+        JsonHashMap jhm=new JsonHashMap();
+        try{
+           boolean flag=userSrv.add(parameterMap);
+           if (flag){
+               jhm.putMessage("注册成功！");
+           }else {
+               jhm.putFail("注册失败！");
+           }
+        }catch (PcException e){
+            e.printStackTrace();
+            jhm.putError(e.getMsg());
+        }
+        return jhm;
+    }
+
+    /**
+     * @description 删除用户
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param id 用户id
+     * @return jsonHashMap
+     */
+    @RequestMapping("/deleteById")
+    public JsonHashMap deleteById(@RequestParam String id) {
+        JsonHashMap jhm=new JsonHashMap();
+        try{
+            boolean flag=userSrv.deleteById(id);
+            if (flag){
+                jhm.putMessage("删除成功！");
+            }else {
+                jhm.putFail("删除失败！");
+            }
+        }catch (PcException e){
+            e.printStackTrace();
+            jhm.putError(e.getMsg());
+        }
+        return jhm;
+    }
+
+    /**
+     * @description 修改用户信息
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return jsonHashMap
+     */
+    @RequestMapping("/updateById")
+    public JsonHashMap updateById(@RequestParam Map<String, Object> parameterMap) {
+        JsonHashMap jhm=new JsonHashMap();
+        try{
+            boolean flag=userSrv.updateById(parameterMap);
+            if (flag){
+                jhm.putMessage("修改成功！");
+            }else {
+                jhm.putFail("修改失败！");
+            }
+        }catch (PcException e){
+            e.printStackTrace();
+            jhm.putError(e.getMsg());
+        }
+        return jhm;
+    }
+
+    /**
+     * @description 查询用户列表
+     * 完全匹配查询：昵称、电话、姓名等 （待前端确认）
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return jsonHashMap
+     */
+    @RequestMapping("/list")
+    public JsonHashMap list(@RequestParam Map<String, String> parameterMap) {
+        JsonHashMap jhm=new JsonHashMap();
+        try{
+            Map<String,List<Map<String,Object>>> listMap=new HashMap<>(1);
+            listMap.put("list",userSrv.list(parameterMap));
+            jhm.putSuccess(listMap);
+        }catch (PcException e){
+            e.printStackTrace();
+            jhm.putError(e.getMsg());
+        }
+        return jhm;
+    }
 }

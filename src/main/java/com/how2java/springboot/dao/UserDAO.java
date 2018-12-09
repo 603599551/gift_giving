@@ -17,38 +17,32 @@ public interface UserDAO {
      * 添加用户
      * @param map
      */
-    public void add(Map<String,String> map);
+    public int add(Map<String,Object> map);
 
     /**
      * 删除用户
      * @param id
      */
-    public void deleteById(String id);
+    public int deleteById(String id);
 
     /**
      * 修改用户
      * @param map
      */
-    public void updateById(Map<String,Object> map);
+    public int updateById(Map<String,Object> map);
 
     /**
-     * 根据id查找单个用户
-     * @param id
+     * 根据columns查找单个用户
+     * @param map
      * @return
      */
-    public Map<String,Object> findOneById(String id);
+    public Map<String,Object> findOneByColumns(Map<String,String> map);
 
     /**
      * 查询用户列表
      * @return
      */
-    public List<Map<String,Object>> list();
+    public List<Map<String,Object>> list(Map<String,String> map);
 
-    /**
-     * 根据账号、密码查询用户
-     * @param map
-     * @return
-     */
-    public Map<String,Object> findOneByUserNamePwd(Map<String,String> map);
 
 }
