@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ProductDAOImplement implements ProductDAO {
+public class ProductDAOImpl implements ProductDAO {
     @Override
     public void add(Map<String, Object> map) {
 

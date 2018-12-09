@@ -1,13 +1,12 @@
 package com.how2java.springboot.dao;
 
-import com.how2java.springboot.dao.BudPurchaseDAO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class BudPurchaseDAOImplement implements BudPurchaseDAO {
+public class OrderDAOImpl implements OrderDAO {
     @Override
     public void add(Map<String, Object> map) {
 

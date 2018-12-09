@@ -16,7 +16,7 @@ import static com.how2java.springboot.utils.UUIDTool.getUUID;
  * @date 2018-11-30
  */
 @Repository
-public class UserDAOImplement implements UserDAO {
+public class UserDAOImpl implements UserDAO {
     @Autowired
     UserDAO userDAO;
 
