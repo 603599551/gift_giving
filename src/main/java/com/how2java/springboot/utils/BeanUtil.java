@@ -33,16 +33,4 @@ public class BeanUtil {
         return Integer.parseInt(objectToString(object));
     }
 
-    /**
-     * 利用java反射将object转Map对象
-     */
-    public static Map<String, Object> ObjectToMapUtil(Object obj) throws IllegalAccessException {
-        Map<String,Object> map=new HashMap<String, Object>();
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for(Field field:fields){
-            field.setAccessible(true);
-            map.put(field.getName(), field.get(obj));
-        }
-        return map;
-    }
 }
