@@ -1,9 +1,9 @@
-package com.how2java.springboot.modules.bud_purchase.service;
+package com.how2java.springboot.modules.budpurchase.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class BudPurchaseSrv {
 }

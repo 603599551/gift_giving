@@ -1,14 +1,12 @@
 package com.how2java.springboot.modules.user.service;
 
 import com.how2java.springboot.bean.UserBean;
-import com.how2java.springboot.dao.UserDAOImplement;
+import com.how2java.springboot.dao.UserDAOImpl;
 import com.how2java.springboot.exception.PcException;
-import com.how2java.springboot.utils.JsonHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.event.ObjectChangeListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +21,11 @@ import static com.how2java.springboot.utils.BeanUtil.objectToString;
  * @date 2018-12-08
  */
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class UserSrv{
 
     @Autowired
-    UserDAOImplement userDAOImplement;
+    UserDAOImpl userDAOImpl;
 
     /**
      * @description 用户登录
@@ -54,7 +52,7 @@ public class UserSrv{
         Map<String,Object> resultMap=new HashMap<>();
         Map<String,Object> user=new HashMap<>();
         try{
-            user=userDAOImplement.findOneByColumns(parameterMap);
+            user= userDAOImpl.findOneByColumns(parameterMap);
             //账号密码错误
             if (user==null){
                 resultMap.put("code",0);
@@ -96,7 +94,7 @@ public class UserSrv{
         paraMap.put("username",objectToString(parameterMap.get("username")));
         //用户名重复则添加失败
         try{
-            Map<String,Object> user=userDAOImplement.findOneByColumns(paraMap);
+            Map<String,Object> user= userDAOImpl.findOneByColumns(paraMap);
             if (user!=null){
                 return false;
             }
@@ -105,7 +103,7 @@ public class UserSrv{
         }
         //添加用户
         try{
-            return userDAOImplement.add(parameterMap)==0? false:true;
+            return userDAOImpl.add(parameterMap)==0? false:true;
         }catch (Exception e){
             throw new PcException(ADD_EXCEPTION,e.getMessage());
         }
@@ -121,7 +119,7 @@ public class UserSrv{
      */
     public boolean deleteById(String id) throws PcException{
         try{
-            return userDAOImplement.deleteById(id)==0? false:true;
+            return userDAOImpl.deleteById(id)==0? false:true;
         }catch (Exception e){
             throw new PcException(DELETE_EXCEPTION,e.getMessage());
         }
@@ -137,7 +135,7 @@ public class UserSrv{
      */
     public boolean updateById(Map<String,Object> parameterMap) throws PcException{
         try{
-            return userDAOImplement.updateById(parameterMap)==0? false:true;
+            return userDAOImpl.updateById(parameterMap)==0? false:true;
         }catch (Exception e){
             throw new PcException(UPDATE_EXCEPTION,e.getMessage());
         }
@@ -153,7 +151,7 @@ public class UserSrv{
      */
     public List<Map<String, Object>> list(Map<String,String> parameterMap) throws PcException{
         try{
-            return userDAOImplement.list(parameterMap);
+            return userDAOImpl.list(parameterMap);
         }catch (Exception e){
             throw new PcException(SELECT_EXCEPTION,e.getMessage());
         }
