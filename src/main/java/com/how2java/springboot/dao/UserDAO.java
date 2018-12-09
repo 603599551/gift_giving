@@ -16,33 +16,37 @@ public interface UserDAO {
     /**
      * 添加用户
      * @param map
+     * @return 1-成功 0-失败
      */
-    public int add(Map<String,Object> map);
+    int add(Map<String,Object> map);
 
     /**
      * 删除用户
      * @param id
+     * @return 1-成功 0-失败
      */
-    public int deleteById(String id);
+    int deleteById(String id);
 
     /**
      * 修改用户
      * @param map
+     * @return 1-成功 0-失败
      */
-    public int updateById(Map<String,Object> map);
+    int updateById(Map<String,Object> map);
 
     /**
      * 根据columns查找单个用户
      * @param map
-     * @return
+     * @return null-失败
      */
-    public Map<String,Object> findOneByColumns(Map<String,String> map);
+    Map<String,Object> findOneByColumns(Map<String,String> map);
 
     /**
      * 查询用户列表
+     * @param map
      * @return
      */
-    public List<Map<String,Object>> list(Map<String,String> map);
+    List<Map<String,Object>> list(Map<String,String> map);
 
 
 }
