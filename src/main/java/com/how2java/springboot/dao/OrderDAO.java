@@ -8,13 +8,38 @@ import java.util.Map;
 @Mapper
 public interface OrderDAO {
 
-    public void add(Map<String,Object> map);
+    /**
+     * 添加订单
+     * @param map
+     * @return 1-成功 0-失败
+     */
+    int add(Map<String,Object> map);
 
-    public void deleteById(String id);
+    /**
+     * 删除订单
+     * @param id
+     * @return 1-成功 0-失败
+     */
+    int deleteById(String id);
 
-    public void updateById(Map<String,Object> map);
+    /**
+     * 修改订单
+     * @param map
+     * @return 1-成功 0-失败
+     */
+    int updateById(Map<String,Object> map);
 
-    public Map<String,Object> findOneById(String id);
+    /**
+     * 根据columns查找单个订单
+     * @param map
+     * @return null-失败
+     */
+    Map<String,Object> findOneByColumns(Map<String,String> map);
 
-    public List<Map<String,Object>> list();
+    /**
+     * 查询订单列表
+     * @param map
+     * @return
+     */
+    List<Map<String,Object>> list(Map<String,String> map);
 }

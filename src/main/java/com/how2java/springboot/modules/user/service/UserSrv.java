@@ -1,32 +1,39 @@
 package com.how2java.springboot.modules.user.service;
 
 import com.how2java.springboot.bean.UserBean;
-import com.how2java.springboot.dao.UserDAOImplement;
+import com.how2java.springboot.dao.OrderDAOImpl;
+import com.how2java.springboot.dao.UserDAOImpl;
 import com.how2java.springboot.exception.PcException;
-import com.how2java.springboot.utils.JsonHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.event.ObjectChangeListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static com.how2java.springboot.exception.PcExceptionCode.SELECT_EXCEPTION;
+import static com.how2java.springboot.exception.PcExceptionCode.*;
+import static com.how2java.springboot.utils.BeanUtil.objectToString;
 
+/**
+ * @description 用户管理
+ * 用户信息的增删改查+登录
+ * @author CaryZ
+ * @date 2018-12-08
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class UserSrv{
 
     @Autowired
-    UserDAOImplement userDAOImplement;
+    UserDAOImpl userDAOImpl;
+    @Autowired
+    OrderDAOImpl orderDAOImpl;
 
     /**
-     * 用户登录
+     * @description 用户登录
      * 1.验证账号密码是否正确
      * 2.将用户登录信息存到userBean,userBean---data
-     * @param parameterMap
-     * @return resultMap
      * 登录正确：
      * {
      *     "code":1,
@@ -39,12 +46,16 @@ public class UserSrv{
      * {
      *     "code":0,
      * }
+     * @author CaryZ
+     * @date 2018-12-08
+     * @param parameterMap
+     * @return resultMap
      */
     public Map<String,Object> loginIn(Map<String,String> parameterMap) throws PcException {
         Map<String,Object> resultMap=new HashMap<>();
         Map<String,Object> user=new HashMap<>();
         try{
-            user=userDAOImplement.findOneByUserNamePwd(parameterMap);
+            user= userDAOImpl.findOneByColumns(parameterMap);
             //账号密码错误
             if (user==null){
                 resultMap.put("code",0);
@@ -56,7 +67,133 @@ public class UserSrv{
             throw new PcException(SELECT_EXCEPTION,e.getMessage());
         }
         UserBean userBean=new UserBean(user);
-        resultMap.put("data",userBean.getUser());
+        resultMap.put("data",userBean);
         return resultMap;
     }
+
+    /**
+     * @description 用户注册
+     * 1.验证用户名是否重复?
+     * 2.不重复则添加
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * {
+     *     "username":"用户名--",
+     *     "password":"密码--",
+     *     "nickname":"昵称--",
+     *     "phone":"电话",
+     *     "realname":"真实姓名",
+     *     "birthday":"生日",
+     *     "head":"头像",
+     *     "picture":"美照",
+     *     "address":"地址",
+     *     "personalized_signature":"个性签名",
+     * }
+     * @return 添加成功--true 失败--false
+     */
+    public boolean add(Map<String,Object> parameterMap) throws PcException{
+        Map<String,String> paraMap=new HashMap<>(1);
+        paraMap.put("username",objectToString(parameterMap.get("username")));
+        //用户名重复则添加失败
+        try{
+            Map<String,Object> user= userDAOImpl.findOneByColumns(paraMap);
+            if (user!=null){
+                return false;
+            }
+        }catch (Exception e){
+            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+        }
+        //添加用户
+        try{
+            return userDAOImpl.add(parameterMap)==0? false:true;
+        }catch (Exception e){
+            throw new PcException(ADD_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 删除用户
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param id 用户id
+     * @return 删除成功--true 失败--false
+     * @throws PcException
+     */
+    public boolean deleteById(String id) throws PcException{
+        try{
+            return userDAOImpl.deleteById(id)==0? false:true;
+        }catch (Exception e){
+            throw new PcException(DELETE_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 修改用户信息
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return 修改成功--true 失败--false
+     * @throws PcException
+     */
+    public boolean updateById(Map<String,Object> parameterMap) throws PcException{
+        try{
+            return userDAOImpl.updateById(parameterMap)==0? false:true;
+        }catch (Exception e){
+            throw new PcException(UPDATE_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 查询用户列表
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return list
+     * @throws PcException
+     */
+    public List<Map<String, Object>> list(Map<String,String> parameterMap) throws PcException{
+        try{
+            return userDAOImpl.list(parameterMap);
+        }catch (Exception e){
+            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+        }
+    }
+
+    /**
+     * @description 用户信息+送礼、收礼总金额
+     * @author CaryZ
+     * @date 2018-12-09
+     * @param parameterMap
+     * @return list
+     * @throws PcException
+     */
+    public Map<String, Object> showMsg(Map<String,String> parameterMap) throws PcException{
+        try{
+            //用户信息
+            Map<String, Object> resultMap=userDAOImpl.findOneByColumns(parameterMap);
+            //送礼总金额
+            Map<String, String> paraMap=new HashMap<>(1);
+            paraMap.put("sender_id",parameterMap.get("sender_id"));
+            List<Map<String, Object>> sendList=orderDAOImpl.list(paraMap);
+            double sendTotalPrice=0;
+            for (Map<String, Object> sendMap:sendList){
+                sendTotalPrice+=(double)sendMap.get("total_price");
+            }
+            //收礼总金额
+            paraMap.put("receiver_id",parameterMap.get("sender_id"));
+            paraMap.remove("sender_id");
+            List<Map<String, Object>> receiveList=orderDAOImpl.list(paraMap);
+            double receiveTotalPrice=0;
+            for (Map<String, Object> receiveMap:receiveList){
+                receiveTotalPrice+=(double)receiveMap.get("total_price");
+            }
+            resultMap.put("send_total_price",sendTotalPrice);
+            resultMap.put("receive_total_price",receiveTotalPrice);
+            return resultMap;
+        }catch (Exception e){
+            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+        }
+    }
+
 }

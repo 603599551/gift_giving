@@ -4,6 +4,7 @@ import com.how2java.springboot.bean.UserBean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 public class UserSessionUtil {
 

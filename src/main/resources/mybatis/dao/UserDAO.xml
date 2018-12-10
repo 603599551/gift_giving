@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.how2java.springboot.dao.UserDAO">
-    <resultMap id="user" type="Map" >
+    <resultMap id="user" type="java.util.Map" >
         <result property="id" column="id" />
         <result property="role_id" column="role_id"  />
         <result property="username" column="username"  />
@@ -24,27 +24,194 @@
         <result property="modify_time" column="modify_time"  />
         <result property="remark" column="remark"  />
     </resultMap>
-    <select id="list" resultMap="user">
+
+    <select id="list" resultMap="user" parameterType="java.util.Map">
         SELECT * FROM g_user
+        <where>
+            <if test="_parameter.containsKey('nickname')">
+                AND nickname=#{nickname}
+            </if>
+            <if test="_parameter.containsKey('phone')">
+                AND phone=#{phone}
+            </if>
+            <if test="_parameter.containsKey('realname')">
+                AND realname=#{realname}
+            </if>
+        </where>
+        ORDER BY modify_time DESC
     </select>
 
-    <insert id="add" parameterType="Map" >
-        insert into g_user ( id,username ) values (#{id},#{username})
+    <insert id="add" parameterType="java.util.Map" >
+        insert into g_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,username,password,
+            <if test="_parameter.containsKey('role_id')">
+                role_id,
+            </if>
+            <if test="_parameter.containsKey('nickname')">
+                nickname,
+            </if>
+            <if test="_parameter.containsKey('phone')">
+                phone,
+            </if>
+            <if test="_parameter.containsKey('realname')">
+                realname,
+            </if>
+            <if test="_parameter.containsKey('birthday')">
+                birthday,
+            </if>
+            <if test="_parameter.containsKey('head')">
+                head,
+            </if>
+            <if test="_parameter.containsKey('picture')">
+                picture,
+            </if>
+            <if test="_parameter.containsKey('address')">
+                address,
+            </if>
+            <if test="_parameter.containsKey('personalized_signature')">
+                personalized_signature,
+            </if>
+            <if test="_parameter.containsKey('balance')">
+                balance,
+            </if>
+            <if test="_parameter.containsKey('bud_quantity')">
+                bud_quantity,
+            </if>
+            <if test="_parameter.containsKey('corolla_quantity')">
+                corolla_quantity,
+            </if>
+            <if test="_parameter.containsKey('create_time')">
+                create_time,
+            </if>
+            <if test="_parameter.containsKey('modify_time')">
+                modify_time,
+            </if>
+            <if test="_parameter.containsKey('remark')">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},#{username},#{password},
+            <if test="_parameter.containsKey('role_id')">
+                #{role_id},
+            </if>
+            <if test="_parameter.containsKey('nickname')">
+                #{nickname},
+            </if>
+            <if test="_parameter.containsKey('phone')">
+                #{phone},
+            </if>
+            <if test="_parameter.containsKey('realname')">
+                #{realname},
+            </if>
+            <if test="_parameter.containsKey('birthday')">
+                #{birthday},
+            </if>
+            <if test="_parameter.containsKey('head')">
+                #{head},
+            </if>
+            <if test="_parameter.containsKey('picture')">
+                #{picture},
+            </if>
+            <if test="_parameter.containsKey('address')">
+                #{address},
+            </if>
+            <if test="_parameter.containsKey('personalized_signature')">
+                #{personalized_signature},
+            </if>
+            <if test="_parameter.containsKey('balance')">
+                #{balance},
+            </if>
+            <if test="_parameter.containsKey('bud_quantity')">
+                #{bud_quantity},
+            </if>
+            <if test="_parameter.containsKey('corolla_quantity')">
+                #{corolla_quantity},
+            </if>
+            <if test="_parameter.containsKey('create_time')">
+                #{create_time},
+            </if>
+            <if test="_parameter.containsKey('modify_time')">
+                #{modify_time},
+            </if>
+            <if test="_parameter.containsKey('remark')">
+                #{remark},
+            </if>
+        </trim>
     </insert>
 
     <delete id="deleteById" parameterType="java.lang.String">
         DELETE FROM g_user WHERE id=#{id}
     </delete>
 
-    <update id="updateById" parameterType="Map" >
-        update g_user set phone=#{phone} where id=#{id}
+    <update id="updateById" parameterType="java.util.Map" >
+        update g_user
+        <set>
+            <if test="_parameter.containsKey('password')">
+                password=#{password},
+            </if>
+            <if test="_parameter.containsKey('nickname')">
+                nickname=#{nickname},
+            </if>
+            <if test="_parameter.containsKey('phone')">
+                phone=#{phone},
+            </if>
+            <if test="_parameter.containsKey('realname')">
+                realname=#{realname},
+            </if>
+            <if test="_parameter.containsKey('birthday')">
+                birthday=#{birthday},
+            </if>
+            <if test="_parameter.containsKey('head')">
+                head=#{head},
+            </if>
+            <if test="_parameter.containsKey('picture')">
+                picture=#{picture},
+            </if>
+            <if test="_parameter.containsKey('address')">
+                address=#{address},
+            </if>
+            <if test="_parameter.containsKey('balance')">
+                balance=#{balance},
+            </if>
+            <if test="_parameter.containsKey('bud_quantity')">
+                bud_quantity=#{bud_quantity},
+            </if>
+            <if test="_parameter.containsKey('corolla_quantity')">
+                corolla_quantity=#{corolla_quantity},
+            </if>
+            <if test="_parameter.containsKey('modify_time')">
+                modify_time=#{modify_time},
+            </if>
+            <if test="_parameter.containsKey('remark')">
+                remark=#{remark},
+            </if>
+        </set>
+        where id=#{id}
     </update>
 
-    <select id="findOneById" resultMap="user" parameterType="java.lang.String">
-        SELECT * FROM g_user WHERE id=#{id}
-    </select>
-
-    <select id="findOneByUserNamePwd" resultMap="user" parameterType="Map">
-        SELECT * FROM g_user WHERE username=#{username} AND password=#{password}
+    <select id="findOneByColumns" resultMap="user" parameterType="java.util.Map">
+        SELECT * FROM g_user
+        <where>
+            <if test="_parameter.containsKey('id')">
+                AND id=#{id}
+            </if>
+            <if test="_parameter.containsKey('username')">
+                AND username=#{username}
+            </if>
+            <if test="_parameter.containsKey('password')">
+                AND password=#{password}
+            </if>
+            <if test="_parameter.containsKey('nickname')">
+                AND nickname=#{nickname}
+            </if>
+            <if test="_parameter.containsKey('phone')">
+                AND phone=#{phone}
+            </if>
+            <if test="_parameter.containsKey('realname')">
+                AND realname=#{realname}
+            </if>
+        </where>
     </select>
 </mapper>

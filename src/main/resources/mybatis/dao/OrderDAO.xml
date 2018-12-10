@@ -22,23 +22,108 @@
         <result property="modifier_id" column="modifier_id"  />
         <result property="remark" column="remark"  />
     </resultMap>
-    <select id="list" resultMap="order">
+
+    <select id="list" resultMap="order" parameterType="java.util.Map">
         SELECT * FROM g_order
+        <where>
+            <if test="_parameter.containsKey('num')">
+                AND num=#{num}
+            </if>
+            <if test="_parameter.containsKey('sender_id')">
+                AND sender_id=#{sender_id}
+            </if>
+            <if test="_parameter.containsKey('receiver_id')">
+                AND receiver_id=#{receiver_id}
+            </if>
+            <if test="_parameter.containsKey('state')">
+                AND state=#{state}
+            </if>
+        </where>
+        <choose>
+            <when test="_parameter.containsKey('delivery_time')">
+                ORDER BY delivery_time DESC
+            </when>
+            <when test="_parameter.containsKey('quantity')">
+                ORDER BY quantity DESC
+            </when>
+            <when test="_parameter.containsKey('total_price')">
+                ORDER BY total_price DESC
+            </when>
+        </choose>
     </select>
 
-    <insert id="add" parameterType="Map" >
-        insert into g_order ( id,num ) values (#{id},#{num})
+    <insert id="add" parameterType="java.util.Map" >
+        insert into g_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,num,item,total_price,sender_id,receiver_id,state,create_time,modify_time,creator_id,modifier_id,
+            <if test="_parameter.containsKey('quantity')">
+                quantity,
+            </if>
+            <if test="_parameter.containsKey('delivery_time')">
+                delivery_time,
+            </if>
+            <if test="_parameter.containsKey('delivery_id')">
+                delivery_id,
+            </if>
+            <if test="_parameter.containsKey('remark')">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},#{num},#{item},#{total_price},#{sender_id},#{receiver_id},#{state},#{create_time},#{modify_time},#{creator_id},#{modifier_id},
+            <if test="_parameter.containsKey('quantity')">
+                #{quantity},
+            </if>
+            <if test="_parameter.containsKey('delivery_time')">
+                #{delivery_time},
+            </if>
+            <if test="_parameter.containsKey('delivery_id')">
+                #{delivery_id},
+            </if>
+            <if test="_parameter.containsKey('remark')">
+                #{remark},
+            </if>
+        </trim>
     </insert>
 
     <delete id="deleteById" parameterType="java.lang.String">
         DELETE FROM g_order WHERE id=#{id}
     </delete>
 
-    <update id="updateById" parameterType="Map" >
-        update g_order set num=#{num} where id=#{id}
+    <update id="updateById" parameterType="java.util.Map" >
+        update g_order
+        <set>
+            <if test="_parameter.containsKey('state')">
+                state=#{state},
+            </if>
+            <if test="_parameter.containsKey('delivery_time')">
+                delivery_time=#{delivery_time},
+            </if>
+            <if test="_parameter.containsKey('delivery_id')">
+                delivery_id=#{delivery_id},
+            </if>
+            <if test="_parameter.containsKey('modify_time')">
+                modify_time=#{modify_time},
+            </if>
+            <if test="_parameter.containsKey('modifier_id')">
+                modifier_id=#{modifier_id},
+            </if>
+            <if test="_parameter.containsKey('remark')">
+                remark=#{remark},
+            </if>
+        </set>
+        where id=#{id}
     </update>
 
-    <select id="findOneById" resultMap="order" parameterType="java.lang.String">
-        SELECT * FROM g_order WHERE id=#{id}
+    <select id="findOneByColumns" resultMap="order" parameterType="java.util.Map">
+        SELECT * FROM g_order
+        <where>
+            <if test="_parameter.containsKey('id')">
+                AND id=#{id}
+            </if>
+            <if test="_parameter.containsKey('num')">
+                AND num=#{num}
+            </if>
+        </where>
     </select>
 </mapper>
