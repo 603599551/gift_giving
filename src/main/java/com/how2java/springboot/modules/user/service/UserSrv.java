@@ -1,6 +1,7 @@
 package com.how2java.springboot.modules.user.service;
 
 import com.how2java.springboot.bean.UserBean;
+import com.how2java.springboot.dao.OrderDAOImpl;
 import com.how2java.springboot.dao.UserDAOImpl;
 import com.how2java.springboot.exception.PcException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class UserSrv{
 
     @Autowired
     UserDAOImpl userDAOImpl;
+    @Autowired
+    OrderDAOImpl orderDAOImpl;
 
     /**
      * @description 用户登录
@@ -158,19 +161,39 @@ public class UserSrv{
     }
 
     /**
-     * @description 根据columns查询单个用户
+     * @description 用户信息+送礼、收礼总金额
      * @author CaryZ
      * @date 2018-12-09
      * @param parameterMap
      * @return list
      * @throws PcException
      */
-//    public Map<String, Object> findOneByColumns(Map<String,String> parameterMap) throws PcException{
-//        try{
-//            return userDAOImplement.findOneByColumns(parameterMap);
-//        }catch (Exception e){
-//            throw new PcException(SELECT_EXCEPTION,e.getMessage());
-//        }
-//    }
+    public Map<String, Object> showMsg(Map<String,String> parameterMap) throws PcException{
+        try{
+            //用户信息
+            Map<String, Object> resultMap=userDAOImpl.findOneByColumns(parameterMap);
+            //送礼总金额
+            Map<String, String> paraMap=new HashMap<>(1);
+            paraMap.put("sender_id",parameterMap.get("sender_id"));
+            List<Map<String, Object>> sendList=orderDAOImpl.list(paraMap);
+            double sendTotalPrice=0;
+            for (Map<String, Object> sendMap:sendList){
+                sendTotalPrice+=(double)sendMap.get("total_price");
+            }
+            //收礼总金额
+            paraMap.put("receiver_id",parameterMap.get("sender_id"));
+            paraMap.remove("sender_id");
+            List<Map<String, Object>> receiveList=orderDAOImpl.list(paraMap);
+            double receiveTotalPrice=0;
+            for (Map<String, Object> receiveMap:receiveList){
+                receiveTotalPrice+=(double)receiveMap.get("total_price");
+            }
+            resultMap.put("send_total_price",sendTotalPrice);
+            resultMap.put("receive_total_price",receiveTotalPrice);
+            return resultMap;
+        }catch (Exception e){
+            throw new PcException(SELECT_EXCEPTION,e.getMessage());
+        }
+    }
 
 }

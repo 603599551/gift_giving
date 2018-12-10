@@ -5,6 +5,7 @@ import com.how2java.springboot.common.controller.BaseCtrl;
 import com.how2java.springboot.exception.PcException;
 import com.how2java.springboot.modules.user.service.UserSrv;
 import com.how2java.springboot.utils.JsonHashMap;
+import com.how2java.springboot.utils.UserSessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,10 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.how2java.springboot.utils.BeanUtil.ObjectToMapUtil;
 import static com.how2java.springboot.utils.BeanUtil.objectToInt;
-import static com.how2java.springboot.utils.BeanUtil.objectToString;
 import static com.how2java.springboot.utils.CookieUtil.setCookie;
+import static com.how2java.springboot.utils.JsonHashMap.CODE;
 import static com.how2java.springboot.utils.JsonHashMap.RESULT_FAIL;
 import static com.how2java.springboot.utils.UserSessionUtil.SESSION_USER;
 
@@ -69,13 +69,13 @@ public class UserCtrl{
         JsonHashMap jhm=new JsonHashMap();
         try{
             Map<String,Object> resultMap=userSrv.loginIn(parameterMap);
-            if (RESULT_FAIL==objectToInt(resultMap.get("code"))){
+            if (RESULT_FAIL==objectToInt(resultMap.get(CODE))){
                 jhm.putFail("登录失败！");
             }else {
                 //UserBean里的内置对象不为null，但UserBean为空！！坑！！
                 UserBean userBean=(UserBean)resultMap.get("data");
                 session.setAttribute(SESSION_USER,userBean);
-                setCookie("user_id",userBean.getId());
+                setCookie("id",userBean.getId());
                 setCookie("isAdmin",userBean.getRoleId());
                 setCookie("JSESSIONID",session.getId());
                 Map<String,Map<String,Object>> userMap=new HashMap<>(1);
@@ -94,6 +94,18 @@ public class UserCtrl{
      * @author CaryZ
      * @date 2018-12-09
      * @param parameterMap
+     * {
+     *     "username":"用户名--",
+     *     "password":"密码--",
+     *     "nickname":"昵称--",
+     *     "phone":"电话",
+     *     "realname":"真实姓名",
+     *     "birthday":"生日",
+     *     "head":"头像",
+     *     "picture":"美照",
+     *     "address":"地址",
+     *     "personalized_signature":"个性签名",
+     * }
      * @return jsonHashMap
      */
     @RequestMapping("/add")
@@ -142,12 +154,29 @@ public class UserCtrl{
      * @author CaryZ
      * @date 2018-12-09
      * @param parameterMap
+     * {
+     *     "id":"用户id--",
+     *     "password":"密码",
+     *     "nickname":"昵称",
+     *     "phone":"电话",
+     *     "realname":"真实姓名",
+     *     "birthday":"生日",
+     *     "head":"头像",
+     *     "picture":"美照",
+     *     "address":"地址",
+     *     "personalized_signature":"个性签名",
+     * }
      * @return jsonHashMap
      */
     @RequestMapping("/updateById")
-    public JsonHashMap updateById(@RequestParam Map<String, Object> parameterMap) {
+    public JsonHashMap updateById(@RequestParam Map<String, Object> parameterMap,HttpServletRequest request) {
         JsonHashMap jhm=new JsonHashMap();
+        UserSessionUtil usu=new UserSessionUtil(request);
         try{
+            //当管理员更改普通用户信息时，需要传用户id；普通用户自己改，直接从当前session读取
+            if (parameterMap.get("id")==null){
+                parameterMap.put("id",usu.getUserId());
+            }
             boolean flag=userSrv.updateById(parameterMap);
             if (flag){
                 jhm.putMessage("修改成功！");
@@ -167,6 +196,11 @@ public class UserCtrl{
      * @author CaryZ
      * @date 2018-12-09
      * @param parameterMap
+     * {
+     *     "nickname":"昵称",
+     *     "phone":"电话",
+     *     "realname":"真实姓名"
+     * }
      * @return jsonHashMap
      */
     @RequestMapping("/list")
@@ -182,4 +216,28 @@ public class UserCtrl{
         }
         return jhm;
     }
+
+    /**
+     * 用户信息+送礼、收礼总金额
+     * @param parameterMap
+     * @param request
+     * @return
+     */
+    @RequestMapping("/showMsg")
+    public JsonHashMap showMsg(@RequestParam Map<String, String> parameterMap,HttpServletRequest request) {
+        JsonHashMap jhm=new JsonHashMap();
+        UserSessionUtil usu=new UserSessionUtil(request);
+        try{
+            parameterMap.put("sender_id",usu.getUserId());
+            parameterMap.put("id",usu.getUserId());
+            jhm.putSuccess(userSrv.showMsg(parameterMap));
+        }catch (PcException e){
+            e.printStackTrace();
+            jhm.putError(e.getMsg());
+        }
+        return jhm;
+    }
+
+
+
 }
