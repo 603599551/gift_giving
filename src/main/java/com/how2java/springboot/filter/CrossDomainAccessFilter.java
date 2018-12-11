@@ -23,6 +23,8 @@ public class CrossDomainAccessFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Headers", "accept,content-type");
+        resp.setHeader("Access-Control-Allow-Methods", "OPTIONS,GET,POST,DELETE,PUT");
         System.out.println("I am CrossDomainAccessFilter");
         filterChain.doFilter(servletRequest,servletResponse);
     }
