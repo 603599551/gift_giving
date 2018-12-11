@@ -5,9 +5,8 @@ import com.how2java.springboot.modules.order.service.OrderSrv;
 import com.how2java.springboot.utils.JsonHashMap;
 import com.how2java.springboot.utils.UserSessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ public class OrderCtrl {
      * @return jsonHashMap
      */
     @RequestMapping("/add")
-    public JsonHashMap add(@RequestParam Map<String, Object> parameterMap, HttpServletRequest request) {
+    public JsonHashMap add(@RequestBody Map<String, Object> parameterMap, HttpServletRequest request) {
         JsonHashMap jhm=new JsonHashMap();
         UserSessionUtil usu=new UserSessionUtil(request);
         try{
@@ -69,7 +68,7 @@ public class OrderCtrl {
      * @return jsonHashMap
      */
     @RequestMapping("/deleteById")
-    public JsonHashMap deleteById(@RequestParam String id) {
+    public JsonHashMap deleteById(@RequestBody String id) {
         JsonHashMap jhm=new JsonHashMap();
         try{
             boolean flag=orderSrv.deleteById(id);
@@ -100,7 +99,7 @@ public class OrderCtrl {
      * @return jsonHashMap
      */
     @RequestMapping("/updateById")
-    public JsonHashMap updateById(@RequestParam Map<String, Object> parameterMap,HttpServletRequest request) {
+    public JsonHashMap updateById(@RequestBody Map<String, Object> parameterMap,HttpServletRequest request) {
         JsonHashMap jhm=new JsonHashMap();
         UserSessionUtil usu=new UserSessionUtil(request);
         try{
@@ -134,7 +133,7 @@ public class OrderCtrl {
      * @return jsonHashMap
      */
     @RequestMapping("/list")
-    public JsonHashMap list(@RequestParam Map<String, String> parameterMap) {
+    public JsonHashMap list(@RequestBody Map<String, String> parameterMap) {
         JsonHashMap jhm=new JsonHashMap();
         try{
             Map<String,List<Map<String,Object>>> listMap=new HashMap<>(1);

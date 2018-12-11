@@ -8,7 +8,7 @@ import com.how2java.springboot.utils.JsonHashMap;
 import com.how2java.springboot.utils.UserSessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.naming.event.ObjectChangeListener;
@@ -65,7 +65,7 @@ public class UserCtrl{
      * }
      */
     @RequestMapping("/login")
-    public JsonHashMap login(@RequestParam Map<String,String> parameterMap,HttpSession session){
+    public JsonHashMap login(@RequestBody Map<String,String> parameterMap,HttpSession session){
         JsonHashMap jhm=new JsonHashMap();
         try{
             Map<String,Object> resultMap=userSrv.loginIn(parameterMap);
@@ -109,7 +109,7 @@ public class UserCtrl{
      * @return jsonHashMap
      */
     @RequestMapping("/add")
-    public JsonHashMap add(@RequestParam Map<String, Object> parameterMap) {
+    public JsonHashMap add(@RequestBody Map<String, Object> parameterMap) {
         JsonHashMap jhm=new JsonHashMap();
         try{
            boolean flag=userSrv.add(parameterMap);
@@ -133,7 +133,7 @@ public class UserCtrl{
      * @return jsonHashMap
      */
     @RequestMapping("/deleteById")
-    public JsonHashMap deleteById(@RequestParam String id) {
+    public JsonHashMap deleteById(@RequestBody String id) {
         JsonHashMap jhm=new JsonHashMap();
         try{
             boolean flag=userSrv.deleteById(id);
@@ -169,7 +169,7 @@ public class UserCtrl{
      * @return jsonHashMap
      */
     @RequestMapping("/updateById")
-    public JsonHashMap updateById(@RequestParam Map<String, Object> parameterMap,HttpServletRequest request) {
+    public JsonHashMap updateById(@RequestBody Map<String, Object> parameterMap,HttpServletRequest request) {
         JsonHashMap jhm=new JsonHashMap();
         UserSessionUtil usu=new UserSessionUtil(request);
         try{
@@ -204,7 +204,7 @@ public class UserCtrl{
      * @return jsonHashMap
      */
     @RequestMapping("/list")
-    public JsonHashMap list(@RequestParam Map<String, String> parameterMap) {
+    public JsonHashMap list(@RequestBody Map<String, String> parameterMap) {
         JsonHashMap jhm=new JsonHashMap();
         try{
             Map<String,List<Map<String,Object>>> listMap=new HashMap<>(1);
@@ -224,7 +224,7 @@ public class UserCtrl{
      * @return
      */
     @RequestMapping("/showMsg")
-    public JsonHashMap showMsg(@RequestParam Map<String, String> parameterMap,HttpServletRequest request) {
+    public JsonHashMap showMsg(@RequestBody Map<String, String> parameterMap,HttpServletRequest request) {
         JsonHashMap jhm=new JsonHashMap();
         UserSessionUtil usu=new UserSessionUtil(request);
         try{
