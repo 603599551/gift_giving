@@ -3,6 +3,7 @@ package com.how2java.springboot.config;
 
 import com.how2java.springboot.filter.CharactorFilter;
 import com.how2java.springboot.filter.CrossDomainAccessFilter;
+import com.how2java.springboot.filter.PrintIpAndUrlFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,15 @@ public class FilterConfig {
         FilterRegistrationBean filterRegistrationBean=new FilterRegistrationBean(new CharactorFilter());
         filterRegistrationBean.setOrder(2);
         filterRegistrationBean.setName("CrossDomainAccessFilter");
+        filterRegistrationBean.addUrlPatterns("/*");
+        return filterRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean buildPrintIpAndUrlFilter(){
+        FilterRegistrationBean filterRegistrationBean=new FilterRegistrationBean(new PrintIpAndUrlFilter());
+        filterRegistrationBean.setOrder(3);
+        filterRegistrationBean.setName("PrintIpAndUrlFilter");
         filterRegistrationBean.addUrlPatterns("/*");
         return filterRegistrationBean;
     }
