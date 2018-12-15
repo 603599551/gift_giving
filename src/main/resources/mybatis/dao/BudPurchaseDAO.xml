@@ -12,23 +12,44 @@
         <result property="creator_id" column="creator_id"  />
         <result property="remark" column="remark"  />
     </resultMap>
-    <select id="list" resultMap="budOrder">
-        SELECT * FROM g_bud_order
+    <select id="list" resultMap="budOrder" parameterType="java.util.Map">
+        SELECT * FROM g_bud_order ORDER BY create_time DESC
     </select>
 
     <insert id="add" parameterType="Map" >
-        insert into g_bud_order ( id,quantity ) values (#{id},#{quantity})
+        insert into g_bud_order ( id,quantity,total_price,creator_id,create_time ) values (#{id},#{quantity},#{total_price},#{creator_id},#{create_time})
     </insert>
 
-    <delete id="deleteById" parameterType="java.lang.String">
-        DELETE FROM g_bud_order WHERE id=#{id}
-    </delete>
+    <!--<delete id="deleteById" parameterType="java.lang.String">-->
+        <!--DELETE FROM g_bud_order WHERE id=#{id}-->
+    <!--</delete>-->
 
-    <update id="updateById" parameterType="Map" >
-        update g_bud_order set quantity=#{quantity} where id=#{id}
-    </update>
+    <!--<update id="updateById" parameterType="java.util.Map" >-->
+        <!--update g_bud_order-->
+        <!--<set>-->
+            <!--<if test="_parameter.containsKey('quantity')">-->
+                <!--quantity=#{quantity},-->
+            <!--</if>-->
+            <!--<if test="_parameter.containsKey('total_price')">-->
+                <!--total_price=#{total_price},-->
+            <!--</if>-->
+            <!--<if test="_parameter.containsKey('delivery_id')">-->
+                <!--delivery_id=#{delivery_id},-->
+            <!--</if>-->
+            <!--<if test="_parameter.containsKey('modify_time')">-->
+                <!--modify_time=#{modify_time},-->
+            <!--</if>-->
+            <!--<if test="_parameter.containsKey('modifier_id')">-->
+                <!--modifier_id=#{modifier_id},-->
+            <!--</if>-->
+            <!--<if test="_parameter.containsKey('remark')">-->
+                <!--remark=#{remark},-->
+            <!--</if>-->
+        <!--</set>-->
+        <!--where id=#{id}-->
+    <!--</update>-->
 
-    <select id="findOneById" resultMap="budOrder" parameterType="java.lang.String">
-        SELECT * FROM g_bud_order WHERE id=#{id}
-    </select>
+    <!--<select id="findOneById" resultMap="budOrder" parameterType="java.lang.String">-->
+        <!--SELECT * FROM g_bud_order WHERE id=#{id}-->
+    <!--</select>-->
 </mapper>
