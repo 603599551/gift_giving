@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.how2java.springboot.dao.CorollaOrderDAO">
+    <resultMap id="corollaOrder" type="java.util.Map" >
+        <result property="id" column="id" />
+        <result property="user_id" column="user_id" />
+        <result property="bud_quantity" column="bud_quantity"  />
+        <result property="corolla_quantity" column="corolla_quantity"  />
+        <result property="create_time" column="create_time"  />
+        <result property="modify_time" column="modify_time"  />
+        <result property="remark" column="remark"  />
+    </resultMap>
+
+    <select id="list" resultMap="corollaOrder" parameterType="java.util.Map">
+        SELECT * FROM g_corolla_order ORDER BY create_time DESC
+    </select>
+
+    <insert id="add" parameterType="java.util.Map" >
+        insert into g_corolla_order ( id,user_id,bud_quantity,corolla_quantity,create_time,modify_time ) values (#{id},#{user_id},#{bud_quantity},#{corolla_quantity},#{create_time},#{modify_time})
+    </insert>
+</mapper>
