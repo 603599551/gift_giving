@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.how2java.springboot.dao.ProductDAO">
-    <resultMap id="product" type="Map" >
+    <resultMap id="product" type="java.util.Map" >
         <result property="id" column="id" />
         <result property="name" column="name"  />
         <result property="picture" column="picture"  />
@@ -18,22 +18,61 @@
         <result property="remark" column="remark"  />
     </resultMap>
     <select id="list" resultMap="product">
-        SELECT * FROM g_product
+        SELECT * FROM g_product ORDER BY create_time DESC
     </select>
 
-    <insert id="add" parameterType="Map" >
-        insert into g_product ( id,name ) values (#{id},#{name})
+    <insert id="add" parameterType="java.util.Map" >
+        insert into g_product ( id,name,picture,price,meaning,type,create_time,modify_time,creator_id,modifier_id ) values (#{id},#{name},#{picture},#{price},#{meaning},#{type},#{create_time},#{modify_time},#{creator_id},#{modifier_id})
     </insert>
 
     <delete id="deleteById" parameterType="java.lang.String">
         DELETE FROM g_product WHERE id=#{id}
     </delete>
 
-    <update id="updateById" parameterType="Map" >
-        update g_product set price=#{price} where id=#{id}
+    <update id="updateById" parameterType="java.util.Map" >
+        update g_product
+        <set>
+            <if test="_parameter.containsKey('name')">
+                name=#{name},
+            </if>
+            <if test="_parameter.containsKey('picture')">
+                picture=#{picture},
+            </if>
+            <if test="_parameter.containsKey('price')">
+                price=#{price},
+            </if>
+            <if test="_parameter.containsKey('meaning')">
+                meaning=#{meaning},
+            </if>
+            <if test="_parameter.containsKey('type')">
+                type=#{type},
+            </if>
+            <if test="_parameter.containsKey('create_time')">
+                create_time=#{create_time},
+            </if>
+            <if test="_parameter.containsKey('modify_time')">
+                modify_time=#{modify_time},
+            </if>
+            <if test="_parameter.containsKey('modifier_id')">
+                modifier_id=#{modifier_id},
+            </if>
+            <if test="_parameter.containsKey('creator_id')">
+                creator_id=#{creator_id},
+            </if>
+        </set>
+        where id=#{id}
     </update>
 
-    <select id="findOneById" resultMap="product" parameterType="java.lang.String">
-        SELECT * FROM g_product WHERE id=#{id}
+    <select id="findOneByColumns" resultMap="product" parameterType="java.lang.String">
+        SELECT * FROM g_product
+        <where>
+            <if test="_parameter.containsKey('id')">
+                AND id=#{id}
+            </if>
+            <if test="_parameter.containsKey('name')">
+                AND num=#{num}
+            </if>
+        </where>
+        WHERE id=#{id}
     </select>
 </mapper>
